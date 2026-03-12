@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+  <title>WarZone Weekly · Championship</title>
+  <!-- Fonts & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      background-color: #0A0A0A;
+      color: #f0f0f0;
+      font-family: 'DM Sans', sans-serif;
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 1rem 1rem 80px 1rem;
+      flex: 1;
+      position: relative;
+    }
+    /* Back button styling */
+    .back-btn {
+      position: sticky;
+      top: 10px;
+      left: 0;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #1a1a1a;
+      color: #F5A623;
+      border: 2px solid #F5A623;
+      border-radius: 40px;
+      padding: 8px 18px;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      z-index: 99;
+      margin-bottom: 10px;
+      box-shadow: 0 0 15px #F5A62333;
+      transition: 0.2s;
+      width: fit-content;
+    }
+    .back-btn i {
+      font-size: 1.2rem;
+      color: #E8392A;
+    }
+    .back-btn:hover {
+      background: #F5A623;
+      color: #0A0A0A;
+      border-color: #E8392A;
+    }
+    .back-btn:hover i {
+      color: #0A0A0A;
+    }
+    h1, h2, h3, h4 {
+      font-family: 'Bebas Neue', cursive;
+      letter-spacing: 1.5px;
+      font-weight: 400;
+    }
+    h1 { font-size: 3rem; color: #F5A623; text-shadow: 0 0 8px #F5A623; }
+    h2 { font-size: 2.2rem; color: #E8392A; border-left: 6px solid #F5A623; padding-left: 15px; margin: 1.5rem 0 1rem; }
+    .gold { color: #F5A623; }
+    .red { color: #E8392A; }
+    .bg-dark { background: #1a1a1a; border-radius: 16px; padding: 1.2rem; border: 1px solid #2a2a2a; box-shadow: 0 4px 20px rgba(0,0,0,0.8); }
+    button, .btn {
+      background: #F5A623;
+      color: #0A0A0A;
+      font-weight: 700;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 40px;
+      font-size: 1rem;
+      font-family: 'DM Sans', sans-serif;
+      cursor: pointer;
+      box-shadow: 0 0 15px #F5A623;
+      transition: 0.2s;
+      border: 1px solid #E8392A;
+    }
+    button:hover, .btn:hover {
+      background: #E8392A;
+      color: white;
+      box-shadow: 0 0 20px #E8392A;
+      border-color: #F5A623;
+    }
+    button:disabled, .btn-disabled {
+      opacity: 0.5;
+      pointer-events: none;
+      filter: grayscale(1);
+    }
+    input, .input-field {
+      width: 100%;
+      padding: 14px 16px;
+      background: #141414;
+      border: 1px solid #333;
+      border-radius: 12px;
+      font-family: 'DM Sans', sans-serif;
+      color: white;
+      font-size: 1rem;
+      margin-bottom: 16px;
+    }
+    input:focus { outline: 2px solid #F5A623; background: #1f1f1f; }
+    label { font-weight: 500; margin-bottom: 4px; display: block; color: #ccc; }
+    .nav-bottom {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background: #0f0f0f;
+      border-top: 2px solid #F5A623;
+      display: flex;
+      justify-content: space-around;
+      padding: 8px 0 12px;
+      z-index: 100;
+      box-shadow: 0 -5px 20px rgba(0,0,0,0.9);
+    }
+    .nav-item {
+      color: #aaa;
+      font-size: 0.75rem;
+      text-align: center;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 500;
+      cursor: pointer;
+      transition: 0.2s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+    .nav-item i { font-size: 1.5rem; color: #F5A623; }
+    .nav-item.active { color: #F5A623; text-shadow: 0 0 5px gold; }
+    .nav-item.active i { color: #E8392A; }
+    .page { display: none; animation: fade 0.25s; }
+    .page.active-page { display: block; }
+    @keyframes fade { from {opacity:0;} to {opacity:1;} }
+
+    /* cards */
+    .tournament-card {
+      background: #141414;
+      border-radius: 24px;
+      padding: 1.5rem;
+      border: 1px solid #F5A62333;
+      box-shadow: 0 10px 30px -10px #000;
+      margin-bottom: 1.5rem;
+    }
+    .active-tournament .card-title { font-size: 2rem; color: #F5A623; }
+    .prize-highlight { font-size: 2.5rem; font-weight: 700; color: #F5A623; line-height: 1.2; }
+    .stat-box { background: #1e1e1e; border-radius: 24px; padding: 1rem; text-align: center; border: 1px solid #E8392A; }
+
+    .coming-soon-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.2rem;
+      margin-top: 1rem;
+    }
+    .locked-card {
+      background: #1a1a1a;
+      border-radius: 20px;
+      padding: 1.5rem;
+      flex: 1 1 180px;
+      filter: blur(1.2px) grayscale(70%);
+      opacity: 0.75;
+      position: relative;
+      border: 1px dashed #555;
+      pointer-events: none;
+      text-align: center;
+    }
+    .locked-card i { font-size: 2rem; color: #F5A623; margin-bottom: 8px; }
+    .lock-badge {
+      background: #E8392A;
+      color: white;
+      padding: 4px 12px;
+      border-radius: 40px;
+      font-size: 0.8rem;
+      display: inline-block;
+      margin-top: 8px;
+    }
+    
+    /* contact grid */
+    .contact-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      margin: 2rem 0;
+    }
+    .contact-card {
+      background: #1e1e1e;
+      border-radius: 32px;
+      padding: 2rem 1.5rem;
+      text-align: center;
+      border: 2px solid #F5A623;
+      flex: 1 1 280px;
+      transition: 0.2s;
+    }
+    .contact-card:hover { border-color: #E8392A; box-shadow: 0 0 20px #F5A62333; }
+    .contact-card i { font-size: 2.8rem; color: #F5A623; margin-bottom: 1rem; }
+    .whatsapp-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: #25D366;
+      color: black;
+      font-weight: bold;
+      padding: 10px 24px;
+      border-radius: 50px;
+      text-decoration: none;
+      margin-top: 1rem;
+      border: 1px solid #F5A623;
+      box-shadow: 0 0 15px #25D366;
+      font-size: 0.9rem;
+    }
+    .whatsapp-btn:hover {
+      background: #128C7E;
+      color: white;
+    }
+    
+    /* QR placeholder removed – no longer used */
+    .payment-note { background: #1a1a1a; border-radius: 16px; padding: 1rem; border-left: 8px solid #E8392A; }
+    .small-note { font-size: 0.9rem; color: #aaa; }
+    .blink-text { animation: blink 1.5s infinite; }
+    @keyframes blink { 0%{opacity:1;} 50%{opacity:0.5;} 100%{opacity:1;} }
+    hr { border: 1px solid #F5A62333; margin: 1rem 0; }
+    
+    /* redirect card */
+    .redirect-card {
+      background: #1e1e1e;
+      border-radius: 32px;
+      padding: 2rem;
+      text-align: center;
+      border: 2px solid #F5A623;
+      margin: 2rem 0;
+    }
+    .redirect-card i { font-size: 4rem; color: #F5A623; margin-bottom: 1rem; }
+    .kill-bounty {
+      background: #E8392A30;
+      border-radius: 40px;
+      padding: 1rem;
+      border: 1px dashed #F5A623;
+      font-size: 1.3rem;
+    }
+  </style>
+</head>
+<body>
+<div class="container" id="app">
+  <!-- Back button (will be injected at top of each page via JS) -->
+  <div id="back-button-container" style="min-height: 50px;"></div>
+
+  <!-- pages injected via js: home, register, prizes, contact -->
+  <div id="page-home" class="page active-page"></div>
+  <div id="page-register" class="page"></div>
+  <div id="page-prizes" class="page"></div>
+  <div id="page-contact" class="page"></div>
+  <!-- hidden placeholders -->
+  <div id="page-leaderboard" class="page" style="display:none;"></div>
+  <div id="page-admin" class="page" style="display:none;"></div>
+
+  <!-- bottom nav (4 items) -->
+  <div class="nav-bottom">
+    <div class="nav-item" data-page="home"><i class="fas fa-skull"></i><span>Home</span></div>
+    <div class="nav-item" data-page="register"><i class="fas fa-gamepad"></i><span>Register</span></div>
+    <div class="nav-item" data-page="prizes"><i class="fas fa-trophy"></i><span>Prizes</span></div>
+    <div class="nav-item" data-page="contact"><i class="fas fa-phone-alt"></i><span>Contact</span></div>
+  </div>
+</div>
+
+<script>
+  (function() {
+    // History stack for back navigation
+    let pageHistory = ['home']; // start at home
+
+    // Navigation function
+    function setActivePage(pageId) {
+      // Don't push if it's the same page
+      if (pageHistory[pageHistory.length - 1] !== pageId) {
+        pageHistory.push(pageId);
+      }
+      // Limit history size to prevent memory issues
+      if (pageHistory.length > 20) pageHistory.shift();
+
+      // Update visible page
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
+      if (pageId === 'home' || pageId === 'register' || pageId === 'prizes' || pageId === 'contact') {
+        document.getElementById(`page-${pageId}`).classList.add('active-page');
+      } else {
+        document.getElementById('page-home').classList.add('active-page');
+      }
+
+      // Re-render back button and content
+      renderBackButton();
+      // Render the specific page content (they will re-render fully)
+      if (pageId === 'home') renderHome();
+      else if (pageId === 'register') renderRegister();
+      else if (pageId === 'prizes') renderPrizes();
+      else if (pageId === 'contact') renderContact();
+    }
+
+    // Go back function
+    function goBack() {
+      if (pageHistory.length > 1) {
+        pageHistory.pop(); // remove current
+        const prevPage = pageHistory[pageHistory.length - 1];
+        // Update active nav item
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        document.querySelector(`.nav-item[data-page="${prevPage}"]`)?.classList.add('active');
+        // Set page
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
+        document.getElementById(`page-${prevPage}`).classList.add('active-page');
+        renderBackButton();
+        // Render content
+        if (prevPage === 'home') renderHome();
+        else if (prevPage === 'register') renderRegister();
+        else if (prevPage === 'prizes') renderPrizes();
+        else if (prevPage === 'contact') renderContact();
+      } else {
+        // If only home in history, stay on home
+        setActivePage('home');
+      }
+    }
+
+    // Render back button (only show if history length > 1, i.e., not on first page)
+    function renderBackButton() {
+      const container = document.getElementById('back-button-container');
+      if (pageHistory.length > 1) {
+        container.innerHTML = `<div class="back-btn" id="backBtn"><i class="fas fa-arrow-left"></i> BACK</div>`;
+        document.getElementById('backBtn')?.addEventListener('click', goBack);
+      } else {
+        container.innerHTML = ''; // no back button on home
+      }
+    }
+
+    // Page render functions
+    function renderHome() {
+      let html = `
+        <div class="tournament-card active-tournament" style="background: #0f0f0f; border: 2px solid #F5A623;">
+          <h1 style="font-size:4rem; margin-bottom:0;">WARZONE WEEKLY</h1>
+          <p class="gold" style="font-size:1.8rem; font-family:'Bebas Neue';">THE ULTIMATE HOSTEL CHAMPIONSHIP</p>
+          <div style="background:#1F1F1F; border-radius:24px; padding:1.5rem; margin: 1.5rem 0;">
+            <span class="red" style="font-size:2rem;">🔥 ACTIVE TOURNAMENT</span>
+            <h2 style="border:none; margin:0.5rem 0;">FREE FIRE SOLO</h2>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+              <div class="stat-box"><span class="gold">ENTRY</span> ₹10</div>
+              <div class="stat-box"><span class="gold">PRIZE</span> ₹150 (incl. bonus)</div>
+              <div class="stat-box"><span class="gold">MODE</span> Solo</div>
+              <div class="stat-box"><span class="gold">DATE</span> To be announced</div>
+            </div>
+            <button class="btn" id="homeRegisterBtn" style="width:100%; margin-top:1.5rem;">REGISTER NOW</button>
+          </div>
+        </div>
+        <h2>⚔️ COMING SOON <i class="fas fa-lock" style="color:#F5A623;"></i></h2>
+        <div class="coming-soon-grid">
+          <div class="locked-card"><i class="fas fa-futbol"></i> FIFA <div class="lock-badge"><i class="fas fa-lock"></i> 🔒 soon</div></div>
+          <div class="locked-card"><i class="fas fa-futbol"></i> eFootball <div class="lock-badge"><i class="fas fa-lock"></i> 🔒 soon</div></div>
+          <div class="locked-card"><i class="fas fa-crosshairs"></i> BGMI <div class="lock-badge"><i class="fas fa-lock"></i> 🔒 soon</div></div>
+        </div>
+      `;
+      document.getElementById('page-home').innerHTML = html;
+      document.getElementById('homeRegisterBtn')?.addEventListener('click', ()=>{
+        setActivePage('register');
+        // update nav active state
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        document.querySelector('.nav-item[data-page="register"]')?.classList.add('active');
+      });
+    }
+
+    // REGISTER page with QR placeholder removed
+    function renderRegister() {
+      let html = `
+        <h2>⚡ REGISTER · FREE FIRE SOLO</h2>
+        <div class="redirect-card">
+          <i class="fab fa-google"></i>
+          <h3 class="gold" style="font-size:2rem;">GOOGLE FORM</h3>
+          <p style="margin: 1rem 0;">You'll be redirected to complete your registration.</p>
+          <a href="https://forms.gle/jRR2BTMdqm9VxvDGA" target="_blank" class="btn" style="display:inline-block; text-decoration:none;">👉 OPEN FORM</a>
+          <p class="small-note" style="margin-top:1.5rem;"></p>
+          <!-- QR placeholder removed as requested -->
+        </div>
+        <div class="bg-dark" style="margin-top:1rem;">
+          <p><i class="fas fa-info-circle gold"></i> After form submission, you'll receive confirmation via email. Check with coordinators.</p>
+          <p class="kill-bounty"><i class="fas fa-skull red"></i> <span class="gold">₹10 HIGHEST KILL BONUS!</span> — Most eliminations gets extra cash.</p>
+        </div>
+      `;
+      document.getElementById('page-register').innerHTML = html;
+    }
+
+    function renderPrizes() {
+      let html = `
+        <h2>💰 PRIZE POOL · ₹140 (incl. kill bonus)</h2>
+        <div style="display:flex; flex-wrap:wrap; gap:2rem; align-items:center; margin-bottom:2rem;">
+          <div style="flex:2; min-width:200px;">
+            <div class="prize-highlight">🥇 1st ₹90</div>
+            <div class="prize-highlight">🥈 2nd ₹50</div>
+            <div class="prize-highlight gold">💀 Highest kill: ₹10</div>
+            <div class="prize-highlight gold">🏆 total ₹150</div>
+          </div>
+          <div style="flex:1; background:#E8392A20; border-radius:30px; padding:1.5rem; text-align:center;">
+            <span class="gold blink-text" style="font-size:1.8rem;">"₹10 entry. ₹90 prize. ₹10 kill bonus."</span>
+          </div>
+        </div>
+        <p style="text-align:center; margin-top:2rem;"><i class="fas fa-clock gold"></i> match day: to be announced @ 11 PM</p>
+        <div class="kill-bounty" style="text-align:center; margin:1rem auto; max-width:400px;">
+          <i class="fas fa-fire red"></i> Most eliminations = extra ₹10! Every kill counts.
+        </div>
+      `;
+      document.getElementById('page-prizes').innerHTML = html;
+    }
+
+    function renderContact() {
+      let html = `
+        <h2>📞 CONTACT ORGANISERS</h2>
+        <div class="contact-grid">
+          <!-- Host: Raja Saha -->
+          <div class="contact-card">
+            <i class="fas fa-crown"></i>
+            <h3 class="gold" style="font-size:2rem;">RAJA SAHA</h3>
+            <p class="red" style="font-size:1.2rem;">HOST</p>
+            <div style="margin: 1.5rem 0;">
+              <i class="fab fa-whatsapp" style="font-size:2.5rem; color:#25D366;"></i>
+              <p style="font-size:1.8rem; font-family:'Bebas Neue'; letter-spacing:2px;">7047278344</p>
+              <p class="small-note">(WhatsApp only)</p>
+            </div>
+            <a href="https://wa.me/917047278344" target="_blank" class="whatsapp-btn">
+              <i class="fab fa-whatsapp"></i> CHAT
+            </a>
+          </div>
+          <!-- Tournament Coordinator: Shamik Das -->
+          <div class="contact-card">
+            <i class="fas fa-user-tie"></i>
+            <h3 class="gold" style="font-size:2rem;">SHAMIK DAS</h3>
+            <p class="red" style="font-size:1.2rem;">TOURNAMENT COORDINATOR</p>
+            <div style="margin: 1.5rem 0;">
+              <i class="fab fa-whatsapp" style="font-size:2.5rem; color:#25D366;"></i>
+              <p style="font-size:1.8rem; font-family:'Bebas Neue'; letter-spacing:2px;">8617576837</p>
+              <p class="small-note">(WhatsApp only)</p>
+            </div>
+            <a href="https://wa.me/918617576837" target="_blank" class="whatsapp-btn">
+              <i class="fab fa-whatsapp"></i> CHAT
+            </a>
+          </div>
+        </div>
+        <div class="bg-dark" style="text-align:center;">
+          <p><i class="fas fa-exclamation-circle gold"></i> For queries regarding registration, payment or rules, message on WhatsApp. Please mention your name & roll number.</p>
+          <p><i class="fas fa-clock gold"></i> Response time: usually within few hours.</p>
+        </div>
+      `;
+      document.getElementById('page-contact').innerHTML = html;
+    }
+
+    // Attach nav click events
+    document.querySelectorAll('.nav-item').forEach(item => {
+      item.addEventListener('click', (e) => {
+        const page = item.dataset.page;
+        setActivePage(page);
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        item.classList.add('active');
+      });
+    });
+
+    // initial load
+    setActivePage('home');
+    document.querySelector('.nav-item[data-page="home"]').classList.add('active');
+
+    // Pre-render all pages
+    renderHome();
+    renderRegister();
+    renderPrizes();
+    renderContact();
+  })();
+</script>
+</body>
+</html>
